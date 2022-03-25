@@ -10,6 +10,14 @@ This is a personal project for the [H&M Personalized Fashion Recommendations Cha
 
 For this challenge you are given the purchase history of customers across time, along with supporting metadata. Your challenge is to predict what articles each customer will purchase in the 7-day period immediately after the training data ends. Customer who did not make any purchase during that time are excluded from the scoring.
 
+## Evaluation
+
+Submissions are evaluated according to the Mean Average Precision @ 12 (MAP@12):
+
+$MAP@12 = \frac{1}{U} \sum_{u=1}^{U} \frac{1}{min(m,12)}  \sum_{k=1}^{min(n,12)} P(k) \times rel(k)$
+
+where $U$ is the number of customers, $P(k)$ is the precision at cutoff $k$,$n$ is the number predictions per customer, $m$ is the number of ground truth values per customer. and $rel(k)$ is an indicator function equaling 1 if the item at rank $k$ is a relevant (correct) label and 0 otherwise.
+
 ## Files
 
 You are able to download the necessary data files by using the following command
@@ -31,4 +39,4 @@ _This is going to be collection of my notes as I go through competing in this ch
 
 My first thought is to start small and just classify the users into different categories based off of the articles they have purchased. Using this we can start to get a baseline for predicting things. After messing around with clustering of customers using their attributes there wasn't any clear clusters. So I decided to concatenate their last purchases together and use that as the training data.
 
-My next thought is to feed in a product details and make a psuedouser which would buy the product. This we can then iterate over all the products and get the average user for each item, then we can apply a clustering algorithm with these psuedousers and throw real users into the clusters to see where they fall. 
+My next thought is to pull an `article_id` from the transactions and get all the customers who have purchased that article. Then we can use the customers and the next purchase they will make to predict the article they will purchase.
