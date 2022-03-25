@@ -4,6 +4,7 @@ import numpy as np
 from sklearn.cluster import KMeans
 from sklearn.mixture import GaussianMixture
 from sklearn.decomposition import PCA
+from getters import get_customers, get_unique_customers_transactions, has_transactions, find_transactions_by_customer
 
 
 def run_kmeans(data, n_clusters):
@@ -70,3 +71,44 @@ def run_cluster(data, n_clusters=10, n_components=2, method='kmeans', visualize=
   plt.show()
 
   return model
+
+
+def cluster_customers(nclusters=5, verbose=False, nRowsPercent=None):
+
+  nRows = None
+  if nRowsPercent is not None:
+    nRows = int(nRowsPercent * get_customers().shape[0])
+
+
+  customer_with_transactions = get_unique_customers_transactions()
+
+  customers = get_customers(nRows)
+
+  # Drop all rows which have no value for customer_id
+  customers = customers.loc[customers['customer_id'] != 'customer_id']
+
+  customers['has_transactions'] = customers['customer_id'].apply(has_transactions, args=(customer_with_transactions))
+
+  # Drop customers that have no transactions
+  customers = customers.loc[customers['has_transactions'] == True]
+
+  # Get the first transaction for each customer and attach it to the dataframe
+  customers['first_transaction'] = customers['customer_id'].apply(find_transactions_by_customer)
+
+  # Dont need the customer id
+  customers.drop(['customer_id'], axis=1, inplace=True)
+
+  # Set all null values to -1
+  customers.fillna(-1, inplace=True)
+
+  # Label Encoder
+  le = LabelEncoder()
+
+  # Encode everything
+  encoded_series = customers[customers.columns[:]].apply(le.fit_transform)
+
+  # Save the encoded dataframe
+  save_df_csv(encoded_series, "./data/encoded_customers_last_trans.csv")
+
+  cluster = run_cluster(encoded_series, nclusters, 3, visualize=False, method='gmm')
+
