@@ -40,3 +40,7 @@ _This is going to be collection of my notes as I go through competing in this ch
 My first thought is to start small and just classify the users into different categories based off of the articles they have purchased. Using this we can start to get a baseline for predicting things. After messing around with clustering of customers using their attributes there wasn't any clear clusters. So I decided to concatenate their last purchases together and use that as the training data.
 
 My next thought is to pull an `article_id` from the transactions and get all the customers who have purchased that article. Then we can use the customers and the next purchase they will make to predict the article they will purchase.
+
+### Pivot
+
+I took a day off of this and started to think about how we can get recommendations based off a non yes/no purchase history. For example, we dont know what articles a user has looked at previously before and said no to. We only have the "yes's". I read a couple of articles about recommender systems using autoencoders and I think this will be a great starting point for the project. A paper by Florian Strub, Romaric Gaudel and Jérémie Mary outline the process well in their paper [Hybrid Recommender Systems based on Autoencoders](https://dl.acm.org/doi/pdf/10.1145/2988450.2988456).
